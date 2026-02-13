@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Player } from '../types';
 import { Button } from './Button';
-import { Ghost, User, CheckCircle2 } from 'lucide-react';
+import { Ghost, User } from 'lucide-react';
 
 interface RoleRevealProps {
   currentPlayer: Player;

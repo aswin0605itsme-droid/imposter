@@ -1,0 +1,5 @@
+{
+  "name": "Imposter Hunt",
+  "description": "A social deduction game where players try to identify the imposter who doesn't know the secret word. Features AI-generated categories and words.",
+  "requestFramePermissions": []
+}

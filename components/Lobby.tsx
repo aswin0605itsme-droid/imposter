@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Player } from '../types';
 import { Button } from './Button';
-import { Trash2, Plus, Play, UserPlus } from 'lucide-react';
+import { Trash2, Plus, Play, UserPlus, HelpCircle, X } from 'lucide-react';
 import { MIN_PLAYERS } from '../constants';
 
 interface LobbyProps {
@@ -13,6 +13,7 @@ interface LobbyProps {
 
 export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlayer, onStartGame }) => {
   const [newName, setNewName] = useState('');
+  const [showRules, setShowRules] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input on mount for quick start
@@ -33,19 +34,75 @@ export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlay
   };
 
   return (
-    <div className="flex flex-col h-full w-full p-6">
-      <div className="text-center mb-8 pt-6">
-        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 mb-3 drop-shadow-sm">
-          Imposter Hunt
-        </h1>
-        <p className="text-slate-400 font-medium">Find the spy among your friends</p>
+    <div className="flex flex-col h-full w-full p-6 relative">
+      {/* Rules Modal */}
+      {showRules && (
+        <div className="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-md p-6 flex flex-col animate-in fade-in duration-200 rounded-3xl">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">How to Play</h2>
+            <button 
+              onClick={() => setShowRules(false)}
+              className="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto space-y-6 text-slate-300">
+            <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+              <h3 className="text-indigo-400 font-bold mb-2 flex items-center gap-2">
+                1. The Secret Word
+              </h3>
+              <p className="text-sm">
+                Everyone gets the same secret word, except for one person: <strong>The Imposter</strong>.
+              </p>
+            </div>
+            
+            <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+              <h3 className="text-red-400 font-bold mb-2 flex items-center gap-2">
+                2. The Imposter
+              </h3>
+              <p className="text-sm">
+                The Imposter only knows the <strong>Category</strong> (e.g., "Kitchen"), but not the word (e.g., "Toaster"). They must blend in!
+              </p>
+            </div>
+
+            <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+              <h3 className="text-emerald-400 font-bold mb-2 flex items-center gap-2">
+                3. Interrogation
+              </h3>
+              <p className="text-sm">
+                Ask each other questions to find out who doesn't know the word. But be careful! Don't be too obvious, or the Imposter will guess the word.
+              </p>
+            </div>
+          </div>
+          <Button onClick={() => setShowRules(false)} fullWidth className="mt-6">
+            Got it!
+          </Button>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mb-2 pt-4">
+        <div className="w-10"></div> {/* Spacer for centering */}
+        <div className="text-center">
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 drop-shadow-sm">
+            Imposter
+            </h1>
+            <p className="text-slate-400 font-medium text-xs tracking-widest uppercase">Social Deduction</p>
+        </div>
+        <button 
+            onClick={() => setShowRules(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 transition-colors"
+            title="How to play"
+        >
+            <HelpCircle size={20} />
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto mb-6 pr-2 -mr-2">
+      <div className="flex-1 overflow-y-auto mb-6 pr-2 -mr-2 mt-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">
-               Crew Members ({players.length})
+               Crew ({players.length})
             </h2>
             {players.length < MIN_PLAYERS && (
               <span className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded-full font-medium">
@@ -63,7 +120,7 @@ export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlay
                     <img 
                         src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${player.avatarSeed}&backgroundColor=b6e3f4,c0aede,d1d4f9`}
                         alt="avatar" 
-                        className="relative w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 group-hover:border-indigo-400 transition-colors object-cover"
+                        className="relative w-12 h-12 rounded-full bg-slate-700 border-2 border-slate-600 group-hover:border-indigo-400 transition-colors object-cover"
                     />
                   </div>
                   <span className="font-bold text-lg text-slate-100 group-hover:text-white">{player.name}</span>
@@ -79,12 +136,11 @@ export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlay
             ))}
             
             {players.length === 0 && (
-              <div className="text-center py-12 px-6 rounded-3xl border-2 border-dashed border-slate-700/50 bg-slate-800/20">
-                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <UserPlus className="text-slate-500" size={24}/>
+              <div className="text-center py-8 px-6 rounded-3xl border-2 border-dashed border-slate-700/50 bg-slate-800/20">
+                <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <UserPlus className="text-slate-500" size={20}/>
                 </div>
-                <p className="text-slate-400 font-medium">No players yet!</p>
-                <p className="text-sm text-slate-500">Add your friends below to get started.</p>
+                <p className="text-slate-400 font-medium text-sm">No players yet!</p>
               </div>
             )}
           </ul>

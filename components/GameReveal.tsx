@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Player } from '../types';
 import { Button } from './Button';
 import { RotateCcw } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface GameRevealProps {
   players: Player[];
@@ -18,6 +19,35 @@ export const GameReveal: React.FC<GameRevealProps> = ({
   category, 
   onPlayAgain 
 }) => {
+  useEffect(() => {
+    // Fire confetti on reveal
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#ef4444', '#f59e0b', '#ec4899'] // Red, Amber, Pink
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#ef4444', '#f59e0b', '#ec4899']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    frame();
+  }, []);
+
   return (
     <div className="flex flex-col h-full w-full p-6 text-center animate-in fade-in duration-700">
         <div className="flex-1 flex flex-col items-center justify-center">
@@ -69,4 +99,4 @@ export const GameReveal: React.FC<GameRevealProps> = ({
       </Button>
     </div>
   );
- };
+};

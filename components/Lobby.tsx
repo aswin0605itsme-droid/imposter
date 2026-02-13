@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Player } from '../types';
 import { Button } from './Button';
 import { Trash2, Plus, Play, UserPlus } from 'lucide-react';
@@ -13,12 +13,22 @@ interface LobbyProps {
 
 export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlayer, onStartGame }) => {
   const [newName, setNewName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus input on mount for quick start
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleAdd = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (newName.trim()) {
       onAddPlayer(newName.trim());
       setNewName('');
+      // Keep focus on input for rapid entry
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
     }
   };
 
@@ -85,11 +95,12 @@ export const Lobby: React.FC<LobbyProps> = ({ players, onAddPlayer, onRemovePlay
         <form onSubmit={handleAdd} className="flex gap-3 mb-4">
             <div className="relative flex-1 group">
                 <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="Enter name..."
-                className="w-full bg-slate-800 border-2 border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl py-3 pl-4 pr-4 focus:ring-0 focus:border-indigo-500 focus:outline-none transition-all font-medium"
+                  ref={inputRef}
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Enter name..."
+                  className="w-full bg-slate-800 border-2 border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl py-3 pl-4 pr-4 focus:ring-0 focus:border-indigo-500 focus:outline-none transition-all font-medium"
                 />
             </div>
             <Button 

@@ -26,7 +26,8 @@ export default function App() {
 
   const addPlayer = (name: string) => {
     const newPlayer: Player = {
-      id: crypto.randomUUID(),
+      // Use a timestamp + random string for ID to ensure compatibility in non-secure contexts
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
       name,
       isImposter: false,
       avatarSeed: Math.random()
@@ -52,6 +53,9 @@ export default function App() {
 
     // 2. Assign Imposter
     const players = [...gameState.players];
+    // Reset any previous imposter status
+    players.forEach(p => p.isImposter = false);
+    
     const imposterIndex = Math.floor(Math.random() * players.length);
     const updatedPlayers = players.map((p, i) => ({
       ...p,
@@ -72,6 +76,7 @@ export default function App() {
 
   const nextPlayer = () => {
     setGameState(prev => {
+      // Check if we are at the last player
       if (prev.currentPlayerIndex >= prev.players.length - 1) {
         return { ...prev, phase: GamePhase.PLAYING };
       }
